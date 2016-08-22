@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="StatisticTexts">
+        <item>Here are your stats so far</item>
+        <item>Keep up the work!</item>
+        <item>Let\'s get back to work!</item>
+        <item>Hello ^.^</item>
+    </string-array>
+
+</resources>

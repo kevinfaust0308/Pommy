@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Pommy</string>
+    <string name="openDrawer">Open Drawer</string>
+    <string name="closeDrawer">Close Drawer</string>
+
+    <!-- Show Help Screen if User comes from Intro -->
+    <string name="ShowHelpIfComingFromIntro">ShowHelp</string>
+
+    <!-- FONTS -->
+    <string name="ArchitectFont">fonts/architect.ttf</string>
+    <string name="TibetFont">fonts/Tibet.ttf</string>
+
+</resources>
