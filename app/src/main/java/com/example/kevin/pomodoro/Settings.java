@@ -14,25 +14,30 @@ package com.example.kevin.pomodoro;
  */
 public class Settings {
 
+    public static final int DEFAULT_WORK_TIME = 25;
+    public static final int DEFAULT_REST_TIME = 5;
+    public static final int DEFAULT_THEME = R.drawable.theme_green_screen;
+    public static final boolean DEFAULT_VIBRATION = true;
+
     private int mWorkTime;
     private int mRestTime;
 
-    private int mWorkTheme;
-    private int mWorkThemeBorder;
+    private int mTheme;
+    private int mThemeBorder;
     private int mWorkTextColor;
 
     private boolean mHasVibration;
 
 
     public Settings() {
-        mWorkTime = 25;
-        mRestTime = 5;
+        mWorkTime = DEFAULT_WORK_TIME;
+        mRestTime = DEFAULT_REST_TIME;
 
-        mWorkTheme = R.drawable.theme_green_screen;
-        mWorkThemeBorder = R.drawable.theme_default_work_border;
+        mTheme = DEFAULT_THEME;
+        mThemeBorder = R.drawable.theme_default_work_border;
         mWorkTextColor = R.color.defaultTimerTextColor;
 
-        mHasVibration = true;
+        mHasVibration = DEFAULT_VIBRATION;
     }
 
 
@@ -40,8 +45,8 @@ public class Settings {
         mWorkTime = workTime;
         mRestTime = restTime;
 
-        mWorkTheme = workTheme;
-        mWorkThemeBorder = workThemeBorder;
+        mTheme = workTheme;
+        mThemeBorder = workThemeBorder;
         mWorkTextColor = workTextColor;
 
         mHasVibration = hasVibration;
@@ -68,23 +73,23 @@ public class Settings {
     }
 
 
-    public int getWorkTheme() {
-        return mWorkTheme;
+    public int getTheme() {
+        return mTheme;
     }
 
 
-    public void setWorkTheme(int workTheme) {
-        mWorkTheme = workTheme;
+    public void setTheme(int theme) {
+        mTheme = theme;
     }
 
 
-    public int getWorkThemeBorder() {
-        return mWorkThemeBorder;
+    public int getThemeBorder() {
+        return mThemeBorder;
     }
 
 
-    public void setWorkThemeBorder(int workThemeBorder) {
-        mWorkThemeBorder = workThemeBorder;
+    public void setThemeBorder(int themeBorder) {
+        mThemeBorder = themeBorder;
     }
 
 

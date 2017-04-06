@@ -11,7 +11,7 @@
         />
 
     <stroke
-        android:width="5dp"
+        android:width="2dp"
         android:color="@color/md_light_blue_900"/>
 
 

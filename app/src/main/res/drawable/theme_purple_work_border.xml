@@ -7,10 +7,10 @@
         />
 
     <solid
-        android:color="@color/md_brown_900"/>
+        android:color="@color/md_purple_800"/>
 
     <stroke
-        android:width="5dp"
-        android:color="@color/md_brown_100"/>
+        android:width="2dp"
+        android:color="@color/md_purple_100"/>
 
 </shape>

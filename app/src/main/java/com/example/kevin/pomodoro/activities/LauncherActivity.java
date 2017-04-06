@@ -16,21 +16,17 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.example.kevin.pomodoro.R;
-import com.example.kevin.pomodoro.User;
-import com.example.kevin.pomodoro.fragments.UserNameDialogFragment;
-import com.google.gson.Gson;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
-public class LauncherActivity extends AppCompatActivity implements UserNameDialogFragment.OnNameTypedListener {
+public class LauncherActivity extends AppCompatActivity {
 
     private static final String TAG = LauncherActivity.class.getSimpleName();
     private static final String PREFS_FILE = "com.example.kevin.pomodoro.preferences";
 
     private SharedPreferences mPreferences;
-    private SharedPreferences.Editor mEditor;
 
 
     @Override
@@ -45,12 +41,11 @@ public class LauncherActivity extends AppCompatActivity implements UserNameDialo
         }
 
         mPreferences = getSharedPreferences(PREFS_FILE, Context.MODE_PRIVATE);
-        mEditor = mPreferences.edit();
 
-        String user = mPreferences.getString("User", null);
+        boolean firstTime = mPreferences.getBoolean("FirstTimeUser", true);
 
         //if we already have a user, skip this page
-        if (user != null) {
+        if (!firstTime) {
             launchMain(false); //don't show help popup box. not a new user
         }
 
@@ -59,9 +54,8 @@ public class LauncherActivity extends AppCompatActivity implements UserNameDialo
 
     @OnClick(R.id.rel)
     public void launchUserNameDialog() {
-        UserNameDialogFragment dia = new UserNameDialogFragment();
-        //creates new transaction for us, adds DialogFragment to it, and then commits it
-        dia.show(getFragmentManager(), "dia");
+        mPreferences.edit().putBoolean("FirstTimeUser", false).apply();
+        launchMain(true); //show help popup box. a new user
     }
 
 
@@ -77,13 +71,5 @@ public class LauncherActivity extends AppCompatActivity implements UserNameDialo
     }
 
 
-    //called in UserNameDialogFragment.java. a callback
-    @Override
-    public void onNameTyped(String name) {
-        //create new user and store it
-        User user = new User(name);
-        mEditor.putString("User", new Gson().toJson(user)).apply();
-        launchMain(true); //show help popup box. a new user
-    }
 }
 

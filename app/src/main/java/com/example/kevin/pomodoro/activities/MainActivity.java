@@ -17,13 +17,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -31,7 +31,6 @@ import com.example.kevin.pomodoro.Progress;
 import com.example.kevin.pomodoro.R;
 import com.example.kevin.pomodoro.Settings;
 import com.example.kevin.pomodoro.Timer;
-import com.example.kevin.pomodoro.User;
 import com.example.kevin.pomodoro.enums.Mode;
 import com.example.kevin.pomodoro.enums.State;
 import com.example.kevin.pomodoro.fragments.HelpDialogFragment;
@@ -43,6 +42,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, Timer.TimerListener, SettingsDialogFragment.OnSettingsAccessedListener {
 
@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // SHARED PREFERENCES
     private static final String PREFS_FILE = "com.example.kevin.pomodoro.preferences";
     public Settings mSettings;
-    public User mUser;
     public Progress mProgress;
     @BindView(R.id.timerText)
     TextView timerText;
@@ -60,8 +59,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ImageButton restartButton;
     @BindView(R.id.startButton)
     ImageButton startButton;
-    @BindView(R.id.rel)
-    RelativeLayout layout;
+    @BindView(R.id.layout)
+    LinearLayout layout;
     @BindView(R.id.tomatoPicture)
     ImageView tomato;
     @BindView(R.id.helpButton)
@@ -80,9 +79,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private PorterDuffColorFilter filter = new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
     private ActionBarDrawerToggle mDrawerToggle;
     private Timer mTimer;
-    ///header
-    private TextView headerUsernameText;
-    private Menu mNavMenu;
     ///////////////////////////////////////////////////////////////////////
 
 
@@ -109,21 +105,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //get our json representations of our objects if exist. Else, create json representation of a brand new object
         String settings = mPreferences.getString("Settings", gson.toJson(new Settings()));
-        String user = mPreferences.getString("User", ""); //User object must exist if we are at this page. ignore default value
         String progress = mPreferences.getString("Progress", gson.toJson(new Progress()));
 
         //convert json representations to actual objects
         mSettings = gson.fromJson(settings, Settings.class);
-        mUser = gson.fromJson(user, User.class);
         mProgress = gson.fromJson(progress, Progress.class);
 
         // launches help screen when app is first launched and grab user name
         if (getIntent().getBooleanExtra(getString(R.string.ShowHelpIfComingFromIntro), false)) { //SHOWHELP will always be true/false. ignore default value
             launchHelpScreen();
         }
-
-        //+1 for you :D
-        mProgress.incrementAmountOfTimesOpened();
 
         //new timer with either saved or new settings
         mTimer = new Timer(mSettings.getWorkTime(), mSettings.getRestTime(), MainActivity.this);
@@ -144,55 +135,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         setupNavView();
 
-        //listeners
+    }
 
-        timerText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                restartButton.setVisibility(View.VISIBLE);
-                /*
-                --> The toggle functions change the "Mode" property of our timer
-                --> We want to grab the "Mode" of our timer as of now and do stuff using that value
-                 */
-                Mode mode = mTimer.getMode();
-                toggleUI(mode); //JUST changes ui depending on mode
-                mTimer.changeModeAndStart(mode); //toggles mode and state
-                toggleButtonVisibilities();
-            }
-        });
+    @OnClick(R.id.timerText)
+    void onClickTimerText() {
+        restartButton.setVisibility(View.VISIBLE);
+        /*
+        --> The toggle functions change the "Mode" property of our timer
+        --> We want to grab the "Mode" of our timer as of now and do stuff using that value
+        */
+        Mode mode = mTimer.getMode();
+        toggleUI(mode); //JUST changes ui depending on mode
+        mTimer.changeModeAndStart(mode); //toggles mode and state
+        toggleButtonVisibilities();
+    }
 
-        helpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchHelpScreen();
-            }
-        });
+    @OnClick(R.id.helpButton)
+    void onHelp() {
+        launchHelpScreen();
+    }
 
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                restartButton.setVisibility(View.VISIBLE); //restart button is initially hidden
-                mTimer.play();
-                toggleButtonVisibilities();
+    @OnClick(R.id.startButton)
+    void onClickStartButton() {
+        restartButton.setVisibility(View.VISIBLE); //restart button is initially hidden
+        mTimer.play();
+        toggleButtonVisibilities();
+    }
 
-            }
-        });
+    @OnClick(R.id.pauseButton)
+    void onClickPauseButton() {
+        mTimer.pause();
+        toggleButtonVisibilities();
+    }
 
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mTimer.pause();
-                toggleButtonVisibilities();
-            }
-        });
-
-        restartButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mTimer.restart();
-                toggleButtonVisibilities();
-            }
-        });
+    @OnClick(R.id.restartButton)
+    void onClickRestartButton() {
+        mTimer.restart();
+        toggleButtonVisibilities();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -278,8 +257,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tomato.setImageResource(R.drawable.blacktomato);
         }
         if (mode == Mode.REST) {
-            layout.setBackground(ContextCompat.getDrawable(this, mSettings.getWorkTheme())); //theme
-            timerText.setBackground(ContextCompat.getDrawable(this, mSettings.getWorkThemeBorder())); //border
+            layout.setBackground(ContextCompat.getDrawable(this, mSettings.getTheme())); //theme
+            timerText.setBackground(ContextCompat.getDrawable(this, mSettings.getThemeBorder())); //border
             timerText.setTextColor(ContextCompat.getColor(this, mSettings.getWorkTextColor())); //timer text color
             tomato.setImageResource(R.drawable.redtomato);
         }
@@ -344,7 +323,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * Navigation View
-     * --> name of user is displayed
      * --> Home, Statistics, and Settings options
      */
     private void setupNavView() {
@@ -358,12 +336,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        ///HEADER VIEW
-
-        View v = mNavView.getHeaderView(0); ////////////////////////////////////////// <<<----this thing is duh best
-        headerUsernameText = (TextView) v.findViewById(R.id.nameOfCurrentUser);
-        Log.d(TAG, "Setting user's name: " + mUser.getName());
-        headerUsernameText.setText(mUser.getName());
 
         /*
         //SOLELY FOR FONT USE. DISREGARD
@@ -372,8 +344,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         t.setTypeface(Typeface.createFromAsset(getAssets(), getString(R.string.ArchitectFont)));
         */
         ///
-
-        mNavMenu = mNavView.getMenu(); //get the menu from nav
 
     }
 
